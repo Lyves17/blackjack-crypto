@@ -170,6 +170,9 @@
         <input id="nickname" type="text" placeholder="Nickname" maxlength="12">
       </div>
       <div>
+        <button id="btnSolo" class="play-btns noclick-nohide"><span><i class="fas fa-robot"></i></span>Play Solo</button>
+      </div>
+      <div>
         <button id="btnOffline" class="play-btns noclick-nohide"><span><i class="fas fa-user"></i></span>Play Offline</button>
       </div>
       <div>
@@ -607,10 +610,21 @@
         freePlayBadge.classList.remove("hidden");
         walletStatus.classList.add("hidden");
         walletInfo.classList.add("hidden");
+        // Show solo play button, hide multiplayer buttons
+        if (document.getElementById("btnSolo")) document.getElementById("btnSolo").classList.remove("hide-element");
+        if (document.getElementById("btnCreate")) document.getElementById("btnCreate").classList.add("hide-element");
+        if (document.getElementById("btnJoin")) document.getElementById("btnJoin").classList.add("hide-element");
+        if (document.getElementById("btnOffline")) document.getElementById("btnOffline").classList.add("hide-element");
       } else {
         modeFreeBtn.classList.remove("active");
         modeMultiBtn.classList.add("active");
         freePlayBadge.classList.add("hidden");
+        if (document.getElementById("btnSolo")) document.getElementById("btnSolo").classList.add("hide-element");
+        if (document.getElementById("btnCreate")) document.getElementById("btnCreate").classList.remove("hide-element");
+        if (document.getElementById("btnOffline")) document.getElementById("btnOffline").classList.remove("hide-element");
+        if (window.location.href.length - 1 > window.origin.length) {
+          if (document.getElementById("btnJoin")) document.getElementById("btnJoin").classList.remove("hide-element");
+        }
         if (window.WalletManager && window.WalletManager.isWalletConnected()) {
           walletInfo.classList.remove("hidden");
           walletStatus.classList.add("hidden");
@@ -623,6 +637,11 @@
 
     modeFreeBtn.addEventListener("click", () => { gameMode = "solo"; updateModeUI(); });
     modeMultiBtn.addEventListener("click", () => { gameMode = "multi"; updateModeUI(); });
+
+    // Solo play button
+    document.getElementById("btnSolo").addEventListener("click", () => {
+      initSoloMode();
+    });
 
     if (connectBtn) {
       connectBtn.addEventListener("click", async () => {
@@ -660,6 +679,9 @@
         if (gameMode === "multi") walletStatus.classList.remove("hidden");
       }
     };
+
+    // Initialize mode UI on load
+    updateModeUI();
   </script>
 </body>
 </html>
