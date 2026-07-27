@@ -259,9 +259,17 @@ function playerBets() {
 
 $(document).on("click", ".ready", function () {
   chipPlace.play();
-  sendPlayerBets();
   $("#leave-table").addClass("noclick");
   $(".ready").addClass("hide-element");
+
+  if (typeof soloMode !== "undefined" && soloMode) {
+    // SOLO MODE: start round locally
+    soloStartRound();
+    return;
+  }
+
+  // MULTIPLAYER MODE
+  sendPlayerBets();
   player = players[currentPlayer];
   updateCurrentPlayer();
   theClient.isReady = true;
@@ -650,6 +658,10 @@ function dealerWin(i) {
 }
 
 function resetGame() {
+  if (typeof soloMode !== "undefined" && soloMode) {
+    soloResetRound();
+    return;
+  }
   // Assign players balance to the list
   for (let i = 0; i < spectators.length; i++) {
     for (let x = 0; x < players.length; x++) {
