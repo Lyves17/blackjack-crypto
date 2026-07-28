@@ -156,6 +156,8 @@ const SoloGame = {
     // Show/hide deal button
     if (this.bet > 0 && this.state === 'betting') {
       this.els.btnDeal.classList.remove('hidden');
+    } else if (this.state === 'betting') {
+      this.els.btnDeal.classList.add('hidden');
     }
 
     // Enable/disable double based on balance
@@ -374,7 +376,13 @@ const SoloGame = {
     // Check bankrupt
     if (this.balance <= 0) {
       this.els.resultText.textContent = 'BANKRUPT!';
-      this.els.resultAmount.textContent = 'Refresh to restart';
+      this.els.resultAmount.textContent = 'You lost everything';
+      this.els.btnNewRound.textContent = 'Back to Menu';
+      this.els.btnNewRound.onclick = () => {
+        this.els.btnNewRound.textContent = 'New Round';
+        this.els.btnNewRound.onclick = () => this.newRound();
+        this.showScreen('menu');
+      };
     }
   },
 
