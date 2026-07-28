@@ -54,12 +54,12 @@ const leaveTable = document.querySelector("#leave-table");
 function initSoloMode() {
     soloMode = true;
     clientId = "solo-" + Date.now();
-    nickname = document.getElementById("nickname").value || "Solo Player";
+    let nicknameValue = document.getElementById("nickname").value || "Solo Player";
     avatar = document.querySelectorAll(".slideAvatars");
     let selectedAvatar = avatar[slideIndex - 1].dataset.value;
 
     theClient = {
-        nickname: nickname,
+        nickname: nicknameValue,
         avatar: selectedAvatar,
         cards: [],
         bet: 0,
@@ -81,7 +81,7 @@ function initSoloMode() {
     playerSlot[0].firstElementChild.nextElementSibling.remove();
     playerSlot[0].firstElementChild.nextElementSibling.classList.remove("hide-element");
     playerSlot[0].firstElementChild.nextElementSibling.nextElementSibling.classList.remove("hide-element");
-    playerSlot[0].firstElementChild.nextElementSibling.innerText = nickname;
+    playerSlot[0].firstElementChild.nextElementSibling.innerText = nicknameValue;
     playerSlot[0].firstElementChild.nextElementSibling.innerHTML += `<span><img class="player-avatar" src="/imgs/avatars/${selectedAvatar}.svg" alt="avatar"></span>`;
 
     // Hide multiplayer-only elements
@@ -93,9 +93,6 @@ function initSoloMode() {
     $("#game-room").removeClass("hide-element");
     $("#bets-container").removeClass("noclick");
     $("#balance").text(theClient.balance);
-
-    // Init bet buttons
-    playerBets();
 }
 
 // SOLO DECK FUNCTIONS
@@ -529,6 +526,7 @@ async function saveSoloGame(result, payout, isWin) {
 
 function initMultiplayerMode() {
     soloMode = false;
+    if (ws && ws.readyState === WebSocket.OPEN) return;
     let HOST = location.origin.replace(/^http/, "ws");
     ws = new WebSocket(HOST);
 
@@ -540,6 +538,11 @@ function initMultiplayerMode() {
 
     ws.addEventListener("error", (e) => {
         console.error("WebSocket error:", e);
+    });
+
+    ws.addEventListener("close", () => {
+        console.log("WebSocket closed, reconnecting in 3s...");
+        setTimeout(() => { ws = null; initMultiplayerMode(); }, 3000);
     });
 }
 
@@ -1144,35 +1147,51 @@ window.addEventListener("load", function () {
 
         btnCreate.addEventListener("click", (e) => {
             if (soloMode) return;
-            $("#loading-screen").removeClass("hide-element");
-            const payLoad = {
-                method: "create", clientId: clientId, theClient: theClient,
-                playerSlot: playerSlot, playerSlotHTML: playerSlotHTML, roomId: roomId,
-            };
-            ws.send(JSON.stringify(payLoad));
-            setTimeout(function () {
-                playerJoin();
-                $("#loading-screen").addClass("hide-element");
-                $("#main-menu").addClass("hide-element");
-                $("#game-room").removeClass("hide-element");
-            }, 300);
+            initMultiplayerMode();
+            function tryCreate() {
+                if (!ws || ws.readyState !== WebSocket.OPEN || !clientId) {
+                    setTimeout(tryCreate, 100);
+                    return;
+                }
+                $("#loading-screen").removeClass("hide-element");
+                const payLoad = {
+                    method: "create", clientId: clientId, theClient: theClient,
+                    playerSlot: playerSlot, playerSlotHTML: playerSlotHTML, roomId: roomId,
+                };
+                ws.send(JSON.stringify(payLoad));
+                setTimeout(function () {
+                    playerJoin();
+                    $("#loading-screen").addClass("hide-element");
+                    $("#main-menu").addClass("hide-element");
+                    $("#game-room").removeClass("hide-element");
+                }, 300);
+            }
+            tryCreate();
         });
 
         btnOffline.addEventListener("click", (e) => {
             if (soloMode) return;
-            let offline = true;
-            $("#loading-screen").removeClass("hide-element");
-            const payLoad = {
-                method: "create", clientId: clientId, theClient: theClient,
-                playerSlot: playerSlot, playerSlotHTML: playerSlotHTML, roomId: roomId, offline: offline,
-            };
-            ws.send(JSON.stringify(payLoad));
-            setTimeout(function () {
-                playerJoin();
-                $("#loading-screen").addClass("hide-element");
-                $("#main-menu").addClass("hide-element");
-                $("#game-room").removeClass("hide-element");
-            }, 300);
+            initMultiplayerMode();
+            function tryOffline() {
+                if (!ws || ws.readyState !== WebSocket.OPEN || !clientId) {
+                    setTimeout(tryOffline, 100);
+                    return;
+                }
+                let offline = true;
+                $("#loading-screen").removeClass("hide-element");
+                const payLoad = {
+                    method: "create", clientId: clientId, theClient: theClient,
+                    playerSlot: playerSlot, playerSlotHTML: playerSlotHTML, roomId: roomId, offline: offline,
+                };
+                ws.send(JSON.stringify(payLoad));
+                setTimeout(function () {
+                    playerJoin();
+                    $("#loading-screen").addClass("hide-element");
+                    $("#main-menu").addClass("hide-element");
+                    $("#game-room").removeClass("hide-element");
+                }, 300);
+            }
+            tryOffline();
         });
     }, 200);
 });
