@@ -1,154 +1,129 @@
+// ============================================
+// WALLET MANAGER - MetaMask/Polygon Integration
+// ============================================
+
 const CASINO_WALLET = "0x5B5B6264EF02E701D04c32768c2216080889A2c0";
 const POLYGON_CHAIN_ID = 137;
-const POLYGON_RPC = "https://polygon-rpc.com";
 
-const POLYGON_NETWORK = {
-    chainId: "0x89",
-    chainName: "Polygon Mainnet",
-    nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
-    rpcUrls: [POLYGON_RPC],
-    blockExplorerUrls: ["https://polygonscan.com/"],
-};
+const WalletManager = {
+  address: null,
+  provider: null,
+  signer: null,
 
-let provider = null;
-let signer = null;
-let userAddress = null;
-
-function isWalletConnected() {
-    return userAddress !== null;
-}
-
-function getShortAddress(addr) {
-    if (!addr) return "";
-    return addr.slice(0, 6) + "..." + addr.slice(-4);
-}
-
-async function connectWallet() {
+  async connect() {
     if (!window.ethereum) {
-        throw new Error("No wallet detected. Install MetaMask, Trust Wallet, or any Web3 wallet.");
+      throw new Error("Install MetaMask or any Web3 wallet.");
     }
 
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-
+    this.provider = new ethers.providers.Web3Provider(window.ethereum);
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
 
-    const network = await provider.getNetwork();
+    // Switch to Polygon
+    const network = await this.provider.getNetwork();
     if (network.chainId !== POLYGON_CHAIN_ID) {
-        try {
-            await window.ethereum.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x89" }],
-            });
-        } catch (switchError) {
-            if (switchError.code === 4902) {
-                await window.ethereum.request({
-                    method: "wallet_addEthereumChain",
-                    params: [POLYGON_NETWORK],
-                });
-            } else {
-                throw new Error("Please switch to Polygon network manually.");
-            }
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x89" }],
+        });
+      } catch (e) {
+        if (e.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: "0x89",
+              chainName: "Polygon Mainnet",
+              nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
+              rpcUrls: ["https://polygon-rpc.com"],
+              blockExplorerUrls: ["https://polygonscan.com/"],
+            }],
+          });
         }
-        provider = new ethers.providers.Web3Provider(window.ethereum);
+      }
+      this.provider = new ethers.providers.Web3Provider(window.ethereum);
     }
 
-    signer = provider.getSigner();
-    userAddress = accounts[0];
+    this.signer = this.provider.getSigner();
+    this.address = accounts[0];
 
-    window.ethereum.on("accountsChanged", (newAccounts) => {
-        if (newAccounts.length === 0) {
-            disconnectWallet();
-        } else {
-            userAddress = newAccounts[0];
-            if (typeof window.onWalletUpdate === "function") {
-                window.onWalletUpdate();
-            }
-        }
-    });
+    // Listen for changes
+    window.ethereum.on("accountsChanged", () => location.reload());
+    window.ethereum.on("chainChanged", () => location.reload());
 
-    window.ethereum.on("chainChanged", () => {
-        window.location.reload();
-    });
+    this.updateUI();
+    return this.address;
+  },
 
-    if (typeof window.onWalletUpdate === "function") {
-        window.onWalletUpdate();
-    }
+  disconnect() {
+    this.address = null;
+    this.provider = null;
+    this.signer = null;
+    this.updateUI();
+  },
 
-    return userAddress;
-}
+  isConnected() {
+    return this.address !== null;
+  },
 
-function disconnectWallet() {
-    provider = null;
-    signer = null;
-    userAddress = null;
-    if (typeof window.onWalletUpdate === "function") {
-        window.onWalletUpdate();
-    }
-}
+  getShortAddress() {
+    if (!this.address) return "";
+    return this.address.slice(0, 6) + "..." + this.address.slice(-4);
+  },
 
-async function getBalance() {
-    if (!provider || !userAddress) return "0";
-    const bal = await provider.getBalance(userAddress);
+  async getBalance() {
+    if (!this.provider || !this.address) return "0";
+    const bal = await this.provider.getBalance(this.address);
     return ethers.utils.formatEther(bal);
-}
+  },
 
-async function sendBet(amountMatic) {
-    if (!signer || !userAddress) throw new Error("Wallet not connected");
-    if (!CASINO_WALLET || CASINO_WALLET === "0xYOUR_CASINO_WALLET_ADDRESS_HERE") {
-        throw new Error("Casino wallet not configured");
+  async sendBet(amountMatic) {
+    if (!this.signer) throw new Error("Wallet not connected");
+    const tx = await this.signer.sendTransaction({
+      to: CASINO_WALLET,
+      value: ethers.utils.parseEther(amountMatic.toString()),
+    });
+    return (await tx.wait()).transactionHash;
+  },
+
+  updateUI() {
+    const walletStatus = document.getElementById('wallet-status');
+    const walletInfo = document.getElementById('wallet-info');
+    const walletAddress = document.getElementById('wallet-address');
+
+    if (this.isConnected()) {
+      walletStatus.classList.add('hidden');
+      walletInfo.classList.remove('hidden');
+      walletAddress.textContent = this.getShortAddress();
+    } else {
+      walletStatus.classList.remove('hidden');
+      walletInfo.classList.add('hidden');
     }
-
-    const tx = await signer.sendTransaction({
-        to: CASINO_WALLET,
-        value: ethers.utils.parseEther(amountMatic.toString()),
-    });
-
-    const receipt = await tx.wait();
-    return receipt.transactionHash;
-}
-
-async function withdrawWin(amountMatic, casinoSignerPrivKey) {
-    if (!userAddress) throw new Error("No wallet connected");
-
-    const casinoWallet = new ethers.Wallet(casinoSignerPrivKey, provider);
-    const tx = await casinoWallet.sendTransaction({
-        to: userAddress,
-        value: ethers.utils.parseEther(amountMatic.toString()),
-    });
-
-    const receipt = await tx.wait();
-    return receipt.transactionHash;
-}
-
-function setupWalletListeners() {
-    if (!window.ethereum) return;
-
-    window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length === 0) {
-            userAddress = null;
-            provider = null;
-            signer = null;
-        } else {
-            userAddress = accounts[0];
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            signer = provider.getSigner();
-        }
-        if (typeof window.onWalletUpdate === "function") {
-            window.onWalletUpdate();
-        }
-    });
-}
-
-window.WalletManager = {
-    connectWallet,
-    disconnectWallet,
-    getBalance,
-    sendBet,
-    withdrawWin,
-    isWalletConnected,
-    getShortAddress,
-    setupWalletListeners,
-    get address() { return userAddress; },
-    get provider() { return provider; },
-    get signer() { return signer; },
+  }
 };
+
+// ---- Wallet Button Listeners ----
+document.addEventListener('DOMContentLoaded', () => {
+  const connectBtn = document.getElementById('connect-wallet');
+  const disconnectBtn = document.getElementById('disconnect-wallet');
+
+  if (connectBtn) {
+    connectBtn.addEventListener('click', async () => {
+      try {
+        connectBtn.textContent = 'Connecting...';
+        connectBtn.disabled = true;
+        await WalletManager.connect();
+      } catch (e) {
+        alert(e.message || 'Failed to connect');
+      } finally {
+        connectBtn.textContent = 'Connect Wallet';
+        connectBtn.disabled = false;
+      }
+    });
+  }
+
+  if (disconnectBtn) {
+    disconnectBtn.addEventListener('click', () => {
+      WalletManager.disconnect();
+    });
+  }
+});
