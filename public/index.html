@@ -30,6 +30,7 @@
     .wallet-dot{width:7px;height:7px;border-radius:50%;background:#5ecf6b;box-shadow:0 0 6px rgba(94,207,107,.5)}
     .free-play-badge{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#5ecf6b;background:rgba(94,207,107,.1);border:1px solid rgba(94,207,107,.3);border-radius:16px;padding:5px 12px}
     .hidden{display:none!important}
+    .menu-label{font-size:11px;font-weight:700;color:#ffe08a;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-bottom:6px;font-family:'Rubik',sans-serif}
   </style>
 </head>
 <body>
@@ -125,6 +126,7 @@
   <div id="main-menu" class="">
     <h1 id="blackjack-title">blackjack21</h1>
     <div id="main-box">
+      <div class="menu-label">Choose your avatar</div>
       <div id="avatar-box">
         <button class="prev" onclick="plusSlides(-1)">
           <i class="fas fa-chevron-left"></i>          
@@ -164,19 +166,18 @@
         <button class="next" onclick="plusSlides(1)">
           <i class="fas fa-chevron-right"></i>
         </button>
-
       </div>
       <div>
-        <input id="nickname" type="text" placeholder="Nickname" maxlength="12">
+        <input id="nickname" type="text" placeholder="Enter your nickname" maxlength="12">
       </div>
       <div>
-        <button id="btnSolo" class="play-btns noclick-nohide"><span><i class="fas fa-robot"></i></span>Play Solo</button>
+        <button id="btnSolo" class="play-btns"><span><i class="fas fa-robot"></i></span>Play Solo</button>
       </div>
       <div>
-        <button id="btnOffline" class="play-btns noclick-nohide"><span><i class="fas fa-user"></i></span>Play Offline</button>
+        <button id="btnOffline" class="play-btns noclick-nohide hide-element"><span><i class="fas fa-user"></i></span>Play Offline</button>
       </div>
       <div>
-        <button id="btnCreate" class="play-btns noclick-nohide"><span><i class="fas fa-users"></i></span>Create Room</button>
+        <button id="btnCreate" class="play-btns noclick-nohide hide-element"><span><i class="fas fa-users"></i></span>Create Room</button>
       </div>
       <div>
         <button id="btnJoin" class="play-btns noclick-nohide hide-element"><span><i class="fas fa-users"></i></span>Join Room</button>
