@@ -30,6 +30,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   user-select: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .hidden { display: none !important; }
@@ -298,12 +300,14 @@ body {
 /* --- GAME SCREEN --- */
 #game-screen {
   min-height: calc(100vh - 50px);
+  max-height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
   position: relative;
   background:
     radial-gradient(ellipse at 50% 40%, rgba(20,83,45,0.4) 0%, transparent 60%),
     var(--bg-dark);
+  overflow-y: auto;
 }
 
 /* Table felt */
@@ -313,9 +317,12 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 15px 20px;
   position: relative;
-  min-height: 500px;
+  min-height: 400px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* --- DEALER AREA --- */
@@ -323,7 +330,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .area-label {
@@ -357,13 +364,14 @@ body {
   display: flex;
   justify-content: center;
   gap: 8px;
-  min-height: 120px;
+  min-height: 100px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .card-img {
-  width: 80px;
-  height: 112px;
+  width: 70px;
+  height: 98px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   transition: transform 0.2s;
@@ -415,7 +423,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* --- BETTING / INFO BAR --- */
@@ -451,19 +459,33 @@ body {
 
 .info-value.gold { color: var(--gold); }
 
+/* --- BETTING SECTION (Chips + Action Buttons) --- */
+.betting-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
 /* --- CHIP TRAY --- */
 .chip-tray {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 16px 20px;
+  gap: 6px;
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .chip {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -512,8 +534,12 @@ body {
 .bet-controls {
   display: flex;
   gap: 10px;
-  margin: 0 20px 10px;
+  margin: 0 20px 8px;
   justify-content: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .bet-ctrl-btn {
@@ -559,50 +585,52 @@ body {
 /* --- ACTION BUTTONS --- */
 .action-bar {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: 8px;
+  align-items: stretch;
 }
 
 .action-btn {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+  min-width: 100px;
+  height: 44px;
+  border-radius: 10px;
   border: 2px solid;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s;
-  gap: 2px;
+  gap: 8px;
   background: var(--bg-card);
+  padding: 0 16px;
 }
 
-.action-btn i { font-size: 20px; }
-.action-btn span { font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.action-btn i { font-size: 16px; }
+.action-btn span { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-.action-btn:hover { transform: translateY(-4px); }
-.action-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+.action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.action-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
 .btn-stand {
   border-color: var(--red);
   color: var(--red);
 }
-.btn-stand:hover { background: var(--red); color: #fff; }
+.btn-stand:hover { background: var(--red); color: #fff; box-shadow: 0 4px 12px rgba(220,38,38,0.4); }
 
 .btn-hit {
   border-color: var(--green);
   color: var(--green);
 }
-.btn-hit:hover { background: var(--green); color: #fff; }
+.btn-hit:hover { background: var(--green); color: #fff; box-shadow: 0 4px 12px rgba(34,197,94,0.4); }
 
 .btn-double {
   border-color: var(--gold);
   color: var(--gold);
 }
-.btn-double:hover { background: var(--gold); color: #000; }
+.btn-double:hover { background: var(--gold); color: #000; box-shadow: 0 4px 12px rgba(212,168,67,0.4); }
 
 /* --- RESULT OVERLAY --- */
 .result-overlay {
@@ -682,13 +710,30 @@ body {
 }
 
 /* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .betting-section {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .action-bar {
+    flex-direction: row;
+    width: 100%;
+  }
+  
+  .action-btn {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 @media (max-width: 600px) {
   .menu-title { font-size: 36px; letter-spacing: 4px; }
   .menu-card { padding: 24px 20px; }
   .card-img { width: 60px; height: 84px; }
   .chip { width: 44px; height: 44px; font-size: 9px; }
-  .action-btn { width: 60px; height: 60px; }
-  .action-btn i { font-size: 18px; }
+  .action-btn { min-width: 80px; height: 40px; font-size: 10px; padding: 0 12px; }
+  .action-btn i { font-size: 14px; }
   .info-bar { gap: 20px; }
   .info-value { font-size: 16px; }
   .result-text { font-size: 28px; }
@@ -701,4 +746,50 @@ body {
   .chip { width: 38px; height: 38px; font-size: 8px; }
   .chip-tray { gap: 4px; }
   .card-img { width: 50px; height: 70px; }
+  .action-btn { min-width: 70px; height: 36px; gap: 6px; }
+  .action-btn span { font-size: 9px; }
+}
+
+/* --- DESKTOP OPTIMIZATIONS --- */
+@media (min-width: 1024px) {
+  .card-img {
+    width: 75px;
+    height: 105px;
+  }
+  
+  .chip {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .action-btn {
+    min-width: 110px;
+    height: 46px;
+  }
+  
+  .action-btn i {
+    font-size: 18px;
+  }
+  
+  .action-btn span {
+    font-size: 12px;
+  }
+}
+
+@media (min-height: 800px) {
+  .table-felt {
+    min-height: 450px;
+  }
+  
+  .cards-row {
+    min-height: 110px;
+  }
+  
+  .dealer-area {
+    margin-bottom: 20px;
+  }
+  
+  .player-area {
+    margin-bottom: 15px;
+  }
 }

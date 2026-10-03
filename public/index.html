@@ -102,17 +102,36 @@
       </div>
     </div>
 
-    <!-- Chips -->
-    <div id="chip-tray" class="chip-tray">
-      <div class="chip chip-10" data-value="10">10</div>
-      <div class="chip chip-50" data-value="50">50</div>
-      <div class="chip chip-100" data-value="100">100</div>
-      <div class="chip chip-500" data-value="500">500</div>
-      <div class="chip chip-1k" data-value="1000">1K</div>
-      <div class="chip chip-5k" data-value="5000">5K</div>
-      <div class="chip chip-10k" data-value="10000">10K</div>
-      <div class="chip chip-50k" data-value="50000">50K</div>
-      <div class="chip chip-100k" data-value="100000">100K</div>
+    <!-- Chips & Action Buttons Container -->
+    <div class="betting-section">
+      <!-- Action Buttons -->
+      <div id="action-btns" class="action-bar hidden">
+        <button id="btn-stand" class="action-btn btn-stand">
+          <i class="fas fa-hand"></i>
+          <span>Stand</span>
+        </button>
+        <button id="btn-hit" class="action-btn btn-hit">
+          <i class="fas fa-hand-pointer"></i>
+          <span>Hit</span>
+        </button>
+        <button id="btn-double" class="action-btn btn-double">
+          <i class="fas fa-dice"></i>
+          <span>2x</span>
+        </button>
+      </div>
+
+      <!-- Chips -->
+      <div id="chip-tray" class="chip-tray">
+        <div class="chip chip-10" data-value="10">10</div>
+        <div class="chip chip-50" data-value="50">50</div>
+        <div class="chip chip-100" data-value="100">100</div>
+        <div class="chip chip-500" data-value="500">500</div>
+        <div class="chip chip-1k" data-value="1000">1K</div>
+        <div class="chip chip-5k" data-value="5000">5K</div>
+        <div class="chip chip-10k" data-value="10000">10K</div>
+        <div class="chip chip-50k" data-value="50000">50K</div>
+        <div class="chip chip-100k" data-value="100000">100K</div>
+      </div>
     </div>
 
     <!-- Bet Controls -->
@@ -120,22 +139,6 @@
       <button id="btn-clear" class="bet-ctrl-btn">Clear</button>
       <button id="btn-deal" class="btn-deal hidden">Deal</button>
       <button id="btn-max" class="bet-ctrl-btn">Max</button>
-    </div>
-
-    <!-- Action Buttons -->
-    <div id="action-btns" class="action-bar hidden">
-      <button id="btn-stand" class="action-btn btn-stand">
-        <i class="fas fa-hand"></i>
-        <span>Stand</span>
-      </button>
-      <button id="btn-hit" class="action-btn btn-hit">
-        <i class="fas fa-hand-pointer"></i>
-        <span>Hit</span>
-      </button>
-      <button id="btn-double" class="action-btn btn-double">
-        <i class="fas fa-dice"></i>
-        <span>2x</span>
-      </button>
     </div>
 
     <!-- Result Overlay -->
