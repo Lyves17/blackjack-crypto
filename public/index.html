@@ -31,6 +31,7 @@
           <span class="wallet-dot"></span>
           <span id="wallet-address"></span>
         </div>
+        <button id="btn-deposit" class="wallet-btn connect-btn">Deposit</button>
         <button id="disconnect-wallet" class="wallet-btn" style="background:#1f2937;color:#9ca3af;border:1px solid #374151;">Disconnect</button>
       </div>
     </div>
@@ -152,12 +153,46 @@
 
   </div>
 
+  <!-- ========== DEPOSIT MODAL (SHKeeper) ========== -->
+  <div id="deposit-overlay" class="deposit-overlay hidden">
+    <div class="deposit-modal">
+      <div class="deposit-header">
+        <span class="deposit-title">Deposit</span>
+        <button id="deposit-close" class="deposit-close">&times;</button>
+      </div>
+
+      <div id="deposit-alert" class="deposit-alert hidden"></div>
+
+      <div id="deposit-form" class="deposit-body">
+        <label class="deposit-label" for="deposit-crypto">Crypto</label>
+        <select id="deposit-crypto" class="deposit-input"></select>
+
+        <label class="deposit-label" for="deposit-amount">Amount (USD)</label>
+        <input id="deposit-amount" class="deposit-input" type="number" min="1" step="1" value="50">
+
+        <button id="deposit-submit" class="deposit-submit">Generate address</button>
+      </div>
+
+      <div id="deposit-result" class="deposit-body hidden">
+        <div class="deposit-label">Send exactly</div>
+        <div id="deposit-amount-due" class="deposit-due"></div>
+
+        <div class="deposit-label">To address</div>
+        <div id="deposit-address" class="deposit-address"></div>
+
+        <div class="deposit-label">Status</div>
+        <div id="deposit-status" class="deposit-status">UNPAID</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ========== SCRIPTS ========== -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <script src="/js/game.js"></script>
   <script src="/js/solo.js"></script>
   <script src="/js/wallet.js"></script>
+  <script src="/js/deposit.js"></script>
 
   <!-- Sounds -->
   <script>

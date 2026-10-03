@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Crypto Blackjack - Multiplayer & Solo with MATIC betting",
   "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node index.js"
   },

@@ -12,7 +12,10 @@ const PORT = process.env.PORT || 3000;
 
 // ---- Middleware ----
 app.use(cors());
-app.use(express.json());
+// Le body brut est conserve pour verifier la signature HMAC du callback SHKeeper.
+app.use(express.json({
+  verify: (req, res, buf) => { req.rawBody = buf; }
+}));
 
 // ---- MongoDB ----
 let dbConnected = false;
@@ -51,6 +54,9 @@ app.post('/api/game/save', async (req, res) => {
     res.json({ saved: false, error: e.message });
   }
 });
+
+// ---- SHKeeper (passerelle de paiement crypto) ----
+app.use('/api/shkeeper', require('./routes/shkeeper'));
 
 // ---- Static Files ----
 app.use(express.static(path.join(__dirname, '../public'), {

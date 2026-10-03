@@ -16,7 +16,16 @@ fi
 node <<'NODE'
 const fs = require('fs');
 
-const keys = ['MONGODB_URI', 'PORT', 'DOMAIN_NAME', 'SHKEEPER_URL', 'SHKEEPER_API_KEY'];
+const keys = [
+  'MONGODB_URI',
+  'PORT',
+  'NODE_ENV',
+  'DOMAIN_NAME',
+  'PUBLIC_URL',
+  'SHKEEPER_URL',
+  'SHKEEPER_API_KEY',
+  'SHKEEPER_FIAT',
+];
 const source = fs.existsSync('.env') ? '.env' : '.env.example';
 const lines = fs.readFileSync(source, 'utf8').split(/\r?\n/);
 
